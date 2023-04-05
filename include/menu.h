@@ -1,19 +1,16 @@
 #ifndef menu_h
 #define menu_h
 
-
-inline int charToInt(char c);
-inline void clearInputBuffer();
 class Menu{
 private:
     double dx;
     double X_0;
     double X_n;
-    char input;
+    int input;
 public:
-    Menu();
+    Menu(double X_0=1, double X_n=1, double dx=0.01);
     void start();
-    void print();
+    void print() const;
 };
 
 #endif
