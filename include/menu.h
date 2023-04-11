@@ -2,12 +2,12 @@
 #define menu_h
 
 class Menu{
-private:
+ private:
     double dx;
     double X_0;
     double X_n;
     int input;
-public:
+ public:
     Menu(double X_0=1, double X_n=1, double dx=0.01);
     void start();
     void print() const;

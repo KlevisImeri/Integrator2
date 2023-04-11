@@ -1,5 +1,5 @@
 #include <iostream>
-#include <cstdlib>
+// #include <cstdlib>
 #include "menu.h"
 
 using namespace std;
@@ -37,8 +37,8 @@ void Menu::start(){
                 cin>>X_n;
                 break;
             }          
-        }while(input!=9);
-    }
+    }while(input!=9);
+}
 
 void Menu::print() const{
     cout<<"dx = "<<dx<<"   X_0 = "<<X_n<<"    X_n = "<<X_0<<endl;
