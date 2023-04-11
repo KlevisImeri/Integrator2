@@ -1,18 +1,47 @@
 #include "node.h"
 
-template <typename T>
-Node<T>::Node(T data):data(data){}
+//constructors
+Node::Node(Token data):data(data),children(std::vector<Node*>(0)){}
+Node::Node(TokenType type, string str):data(type,str){}
 
-template <typename T>
-void Node<T>::addChild(Node<T>* child) {
-    children.push_back(child);
+//seters|geters
+void Node::setData(Token token){
+    data = token;
+}
+Token Node::getData(){
+    return data;
+}
+vector<Node*> Node::getChildren(){
+    return children;
+}
+Node* Node::getChildAtIndex(int i) const{
+    return children[i];
 }
 
-template <typename T>
-ostream& operator<<(ostream& os, const Node<T>& node){
-    //you dont knwo the type of the data so you can't just
-    //os<< everything. But for this project we are using tokens
-    //therefore we wont chechk before we output.
-    os<<data;
+
+//methods
+int Node::numberOfChildren() const{
+    return children.size();
+}
+bool Node::hasChildren() const{
+    return children.size()!=0;
+}
+void Node::addChild(Node& child){
+    children.push_back(&child);
+}
+void Node::print(bool lastone) const{
+    if(lastone){
+        cout<<"└──"<<data;  
+    }else{
+        cout<<"├──"<<data;
+    }
+    
+}
+
+
+//operator overloading
+ostream& operator<<(ostream& os, const Node& node){
+    node.print(false);
+    return os;
 }
 

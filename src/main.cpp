@@ -3,6 +3,9 @@
 #include "menu.h"
 #include "string.h" 
 #include "lexer.h" 
+#include "tree.h"
+#include "token.h"
+#include "node.h"
 
 using namespace std;
 // menu→→integrator
@@ -15,14 +18,40 @@ using namespace std;
 // ↓
 // Output
 
+/*To do: 
+    1. make the nodes dynamically allocated in the heap
+    2. write the parser:
+        1. shuntung yard
+        2. expression tree
+    3. write the evaluator (integrtor)
+    4. write image creator (inheritance file?)
+*/
 int main(){
-    Menu menu(-3.14, 3.14, 0.01);
-    menu.start();
-    Lexer lexer;
-    lexer.askForFunction();
-    lexer.tokenize();
-    lexer.print();
+    // Menu menu(-3.14, 3.14, 0.01);
+    // menu.start();
+    // Lexer lexer;
+    // lexer.askForFunction();
+    // lexer.tokenize();
+    // lexer.print();
+
+    Tree tree(TokenType::NONE,"");
+    Token t1(TokenType::NUMBER, "1");
+    Token t2(TokenType::NUMBER, "2");
+    Node n1(t1);
+    Node n2(t2);
+    Node n11(TokenType::NUMBER, "3");
+    Node n12(TokenType::NUMBER, "4");
+    Node n13(TokenType::NUMBER, "5");
+    tree.addChild(n1);
+    tree.addChild(n2);
+    // tree.addtoRoot({TokenType::NUMBER, "6"});
+    tree.addChild(n1,n11);
+    tree.addChild(n1,n12);
+    tree.addChild(n1,n13);
+    cout<<tree;
+
     return 0;
+
 }
 
 // #include <stack>

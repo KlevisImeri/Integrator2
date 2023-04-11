@@ -9,8 +9,8 @@
 class Lexer{
  private:
     string str;
-    int Tsize;
     Token *pT;
+    int Tsize;
  public:
     Lexer();
     Lexer(string strin);

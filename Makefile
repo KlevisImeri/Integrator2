@@ -1,6 +1,6 @@
 # Compiler options
 CXX = g++
-CXXFLAGS = -Wall -Wextra -Wpedantic
+# CXXFLAGS = -Wall -Wextra -Wpedantic
 
 # Directories
 SRCDIR = src

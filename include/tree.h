@@ -1,21 +1,35 @@
 #ifndef tree_h
 #define tree_h
+#include <iostream>
 #include "node.h"
+#include "token.h"
 
-template <typename T>
+
 class Tree{
  private:
-    Node<T>* root;
+   Node root;
  public:
-    //constuctor
-    Tree();
-    Tree(Node<T>* node);
+   //constuctors
+   Tree(Node node);
+   Tree(TokenType type, string str);
 
-    void setRoot(Node<T>* node);
-    friend void addChild(Node<T>* parent, Node<T>* child);
-    friend ostream& operator<<(ostream& os, const Tree<T>& tree);
+   //setter|getters
+   void setRoot(const Node& node);
+   Node getRoot();
+   
+
+   //methods
+   // void newNode(Node* parent, T data){
+   //    parent
+   // }
+   void addChild(Node &child);
+   void addChild(Node& parent, Node& child);
+   void print(const Node& root, string prefix, bool lastone) const;
+   //operator overloading
+   friend std::ostream& operator<<(ostream& os, const Tree& tree);
 };
 
- ostream& operator<<(ostream& os, const Tree<T>& tree)
+
+ostream& operator<<(ostream& os, const Tree& tree);
 
 #endif
