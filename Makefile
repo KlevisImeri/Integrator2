@@ -26,7 +26,7 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -I $(INCDIR) -c $< -o $@
 
 run: $(TARGET)
-	./$(TARGET)
+	./$(TARGET) < input.txt
 
 clean:
 	rm -f $(OBJS) $(TARGET)

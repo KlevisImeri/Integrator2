@@ -13,9 +13,12 @@ std::ostream& operator<<(std::ostream& os, const Token& t){
         case TokenType::OPERATOR:
             os << "OPERATOR";
             break;
-        case TokenType::PARENTHESES:
-            os << "PARENTHESES";
+        case TokenType::PAREN_RIGHT:
+            os << "PAREN_RIGHT";
             break;
+        case TokenType::PAREN_LEFT:
+            os << "PAREN_LEFT";
+        break;
         case TokenType::COMA:
             os << "COMA";
             break;
@@ -24,6 +27,12 @@ std::ostream& operator<<(std::ostream& os, const Token& t){
             break;
         case TokenType::VARIABLE:
             os << "VARIABLE";
+            break;
+        case TokenType::EULER:
+            os << "EULER";
+            break;
+        case TokenType::PI:
+            os << "PI";
             break;
     }
     os << ": '" << t.value << "'}";

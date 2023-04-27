@@ -2,12 +2,19 @@
 #define parser_h
 
 #include "token.h"
+#include "tree.h"
+#include <vector>
 
-class Parser(){
+using namespace std;
+
+class Parser{
  private:
-    Token *pT;
-    
-
-}
+    Tree tree;
+    vector<Token> output;
+ public:
+    Tree& getTree(){return tree;}
+    vector<Token> shunting_yard(const vector<Token>& tokens);
+    bool parse(vector<Token> tokens);
+};
 
 #endif

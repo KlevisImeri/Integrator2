@@ -3,17 +3,40 @@
 
 #include <string>
 #include <iostream>
+#include <stack>
+#include <queue>
+#include <unordered_map>
 
 using namespace std;
+
+// Define operator precedence
+const unordered_map<char, int> PRECEDENCE{
+    {'+', 1},
+    {'-', 1},
+    {'*', 2},
+    {'/', 2},
+    {'^', 3},
+};
+
+// Define supported functions and their arities
+const unordered_map<string, int> FUNCTION_ARITY{
+    {"sin", 1},
+    {"cos", 1},
+    {"tan", 1},
+    {"log", 2},
+};
 
 enum class TokenType{
     NONE,
     NUMBER,
     OPERATOR,
-    PARENTHESES,
+    PAREN_RIGHT,
+    PAREN_LEFT,
     COMA,
     FUNCTION,
-    VARIABLE
+    VARIABLE,
+    EULER,
+    PI
 };
 
 class Token{

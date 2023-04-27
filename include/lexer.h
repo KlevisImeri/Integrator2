@@ -9,18 +9,16 @@
 class Lexer{
  private:
     string str;
-    Token *pT;
-    int Tsize;
+    vector<Token> tokenList;
  public:
     Lexer();
     Lexer(string strin);
     Lexer(const Lexer& lexer);
-    ~Lexer();
     void askForFunction();
     void setString(const string& strin);
     bool tokenize();
-    bool isFunctionValid();
-    Token* getTokenList();
+    bool tokenizeValid();
+    vector<Token> getTokenList();
     void print() const;
 };
 

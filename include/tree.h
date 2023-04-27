@@ -5,26 +5,31 @@
 #include "token.h"
 
 
+enum Treetype{
+  NORMAL,
+  BINARY,
+  EXPRESSION,
+};
+
+
 class Tree{
  private:
+   Treetype type;
+   double xValue;
    Node root;
  public:
    //constuctors
+   Tree();
    Tree(Node node);
-   Tree(TokenType type, string str);
-
-   //setter|getters
-   void setRoot(const Node& node);
-   Node getRoot();
-   
-
+  Tree(TokenType type, string str);
+    
    //methods
-   // void newNode(Node* parent, T data){
-   //    parent
-   // }
-   void addChild(Node &child);
-   void addChild(Node& parent, Node& child);
+   void buildExpressionTree(vector<Token> tokens);
+   void NodeExpressionTree(Node& node, vector<Token>& tokens);
+   double evaluate(double x);
+   double Nodeeval(Node& node);
    void print(const Node& root, string prefix, bool lastone) const;
+
    //operator overloading
    friend std::ostream& operator<<(ostream& os, const Tree& tree);
 };

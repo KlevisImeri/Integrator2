@@ -12,8 +12,11 @@ class Node{
     vector<Node*> children;
  public:
     //constructors
+    Node();
     Node(Token data);
     Node(TokenType type, string str);
+    //destructor
+    ~Node();
 
     //seters|geters
     void setData(Token data);
@@ -24,11 +27,12 @@ class Node{
     //methods    
     int numberOfChildren() const;
     bool hasChildren() const;
-    void addChild(Node& child);
+    void addChild(Token token);
     void print(bool lastone) const;
 
     //operator overloading
     friend ostream& operator<<(ostream& os, const Node& node);
+    friend class Tree;
 };
 
 ostream& operator<<(ostream& os, const Node& node);

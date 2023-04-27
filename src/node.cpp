@@ -1,8 +1,15 @@
 #include "node.h"
 
 //constructors
+Node::Node(){}
 Node::Node(Token data):data(data),children(std::vector<Node*>(0)){}
 Node::Node(TokenType type, string str):data(type,str){}
+//destructor
+Node::~Node(){
+    for(auto i : children){
+        delete i;
+    }
+}
 
 //seters|geters
 void Node::setData(Token token){
@@ -26,8 +33,9 @@ int Node::numberOfChildren() const{
 bool Node::hasChildren() const{
     return children.size()!=0;
 }
-void Node::addChild(Node& child){
-    children.push_back(&child);
+void Node::addChild(Token data){
+    Node* child = new Node(data);
+    children.push_back(child);
 }
 void Node::print(bool lastone) const{
     if(lastone){
