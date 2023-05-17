@@ -1,5 +1,5 @@
 #include "tree.h"
-#include <cmath>
+
 //constuctors
 Tree::Tree(){}
 Tree::Tree(Node node):root(node),type(NORMAL),xValue(0){}
@@ -68,26 +68,37 @@ void Tree::NodeExpressionTree(Node& node, vector<Token>& tokens){
         NodeExpressionTree(*(node.children[i]),tokens);
     }
 }
+bool Tree::odd(int x){
+    return (x)%2==1;
+}
 double Tree::evaluate(double x){
-    //cout<<"eval function\n";
+    //cout<<root<<endl;
     if(type!=EXPRESSION){
         cout<<"You can not evaluate a non expression tree!"<<endl;
         return 0;
     };
     xValue = x;
     string value = root.data.value;
+    double left, right, base;
     switch (root.data.type) {
         case TokenType::NUMBER:
         //cout<<"number"<<endl;
             return stod(value);
             break;
         case TokenType::OPERATOR:
-            //cout<<"operator"<<endl;
+            //cout<<"operator"<<value[0]<<endl;
             switch (value[0]){
                 case '+':
+                    if(root.children[1]==NULL){
+                        return 0+Nodeeval(*root.children[0]);
+                    }
                     return Nodeeval(*root.children[1])+Nodeeval(*root.children[0]);
                     break;
                 case '-':
+                    if(root.children[1]==NULL){
+                        return 0-Nodeeval(*root.children[0]);
+                    }
+                    //cout<<Nodeeval(*root.children[1])<<'-'<<Nodeeval(*root.children[0])<<'\t';
                     return Nodeeval(*root.children[1])-Nodeeval(*root.children[0]);
                     break;
                 case '*':
@@ -95,10 +106,40 @@ double Tree::evaluate(double x){
                     return Nodeeval(*root.children[1])*Nodeeval(*root.children[0]);
                     break;
                 case '/':
-                    return Nodeeval(*root.children[1])/Nodeeval(*root.children[0]);
+                    left  = Nodeeval(*root.children[1]);
+                    right = Nodeeval(*root.children[0]);
+                    //cout<<left<<'/'<<right<<endl;
+                    if(right>-0.0000001 && right<0.0000001){
+                        cout<<"You can not divide by 0! Make shure you Interval is right!"<<endl;
+                        return 0;
+                    }
+                    return left/right;
                     break;
                 case '^':
-                    return pow(Nodeeval(*root.children[1]),Nodeeval(*root.children[0]));
+                    if(root.children[0]->data.value=="/"){//special case when you have a division
+                        left = Nodeeval(*(root.children[0]->children[1])); //numerator
+                        right = Nodeeval(*(root.children[0]->children[0])); //denominator
+                        base = Nodeeval(*root.children[1]); //base of the pewer
+                        //cout<<base<<"^("<<left<<'/'<<right<<')'<<endl;
+                        if(base>-0.0000001 && base<0.0000001) return 0;
+                        if(base<0){//for negative x values
+                            int gcd = __gcd((int)left,(int)right);
+                            left/=gcd; right/=gcd;
+                            if(odd(right)){ //if denominator is odd
+                                if(odd(left)){
+                                    return -pow(abs(base),left/right); //if left is odd you invert
+                                }else{
+                                return pow(abs(base),left/right); //if left is even you dont have to invert
+                                }
+                            }
+                            return NAN;
+                        }
+                    }
+                    left = Nodeeval(*root.children[0]);
+                    base = Nodeeval(*root.children[1]);
+                    cout<<base<<'^'<<left<<endl;
+                    if(base>-0.0000001 && base<0.0000001) return 0; //its to close to 0 the power fucntion just can not compute
+                    return pow(base,left); //positive x;
                     break;
                 default:
                     break;
@@ -111,7 +152,11 @@ double Tree::evaluate(double x){
             }else if(value=="cos"){
                 return cos(Nodeeval(*root.children[0]));
             }else if(value=="log"){
-              return log(Nodeeval(*root.children[0]))/log(Nodeeval(*root.children[1]));
+                double left=Nodeeval(*root.children[0]);
+                if(left==1){
+                    return 0;
+                }
+              return log(Nodeeval(*root.children[1]))/log(left);
             }else{
               //fucntion type does not exits
               return 0;
@@ -126,7 +171,7 @@ double Tree::evaluate(double x){
             return 2.71828;
             break;
         case TokenType::PI:
-            //pcout<<"PI"<<endl;
+            //cout<<"PI"<<endl;
             return 3.14159265359;
             break;
         default:
@@ -134,34 +179,75 @@ double Tree::evaluate(double x){
             return 0;
             break;
     }
+    return 0;
 }   
 double Tree::Nodeeval(Node& node){
+    //cout<<node<<endl;
     string value = node.data.value;
+    double left, right, base;
         switch (node.data.type) {
             case TokenType::NUMBER:
+                //cout<<"number"<<endl;
                 return stod(value);
                 break;
             case TokenType::OPERATOR:
+            //cout<<"operator node"<<value[0]<<endl;
                 switch (value[0]){
                     case '+':
+                        if(node.children[1]==NULL){
+                            return 0+Nodeeval(*node.children[0]);
+                        }
                         return Nodeeval(*node.children[1])+Nodeeval(*node.children[0]);
                         break;
                     case '-':
+                        //cout<<"minus"<<endl;
+                        if(node.children[1]==NULL){
+                            return 0-Nodeeval(*node.children[0]);
+                        }
                         return Nodeeval(*node.children[1])-Nodeeval(*node.children[0]);
                         break;
                     case '*':
                         return Nodeeval(*node.children[1])*Nodeeval(*node.children[0]);
                         break;
                     case '/':
-                        //cout<<*node.children[1]<<'/'<<*node.children[0];   
-                        //cout<<"="<<Nodeeval(*node.children[1])/Nodeeval(*node.children[0])<<endl;
-                        return Nodeeval(*node.children[1])/Nodeeval(*node.children[0]);
+                        left = Nodeeval(*node.children[1]);
+                        right = Nodeeval(*node.children[0]);
+                        if(right>-0.0000001 && right<0.0000001){
+                            cout<<"You can not divide by 0! Make shure your Interval is right!"<<endl;
+                            return 0;
+                        }
+                        return left/right;
                         break;
                     case '^':
-                        return pow(Nodeeval(*node.children[1]),Nodeeval(*node.children[0]));
+                        //cout<<"power"<<endl;
+                        if(node.children[0]->data.value=="/"){//special case when you have a division
+                            left = Nodeeval(*(node.children[0]->children[1])); //numerator
+                            right = Nodeeval(*(node.children[0]->children[0])); //denominator
+                            base = Nodeeval(*node.children[1]); //base of the pewer
+                            //cout<<base<<"^("<<left<<'/'<<right<<')'<<endl;
+                             if(base>-0.0000001 && base<0.0000001) return 0;
+                            if(base<0){//for negative x values
+                                int gcd = __gcd((int)left,(int)right);
+                                left/=gcd; right/=gcd;
+                                if(odd(right)){ //if denominator is odd
+                                    if(odd(left)){
+                                        return -pow(abs(base),left/right); //if left is odd you invert
+                                    }else{
+                                    return pow(abs(base),left/right); //if left is even you dont have to invert
+                                    }
+                                }
+                                return NAN;
+                            }
+                        }   
+                        left = Nodeeval(*node.children[0]);
+                        base = Nodeeval(*node.children[1]);
+                        // cout<<base<<'^'<<left<<endl;
+                        if(base>-0.0000001 && base<0.0000001) return 0; //its to close to 0 the power fucntion just can not compute
+                        return pow(base,left);
                         break;
                     default:
                         //return operator doesnt exits
+                        cout<<"Operator doesn't exits"<<endl;
                         return 0;
                         break;
                 }
@@ -172,7 +258,11 @@ double Tree::Nodeeval(Node& node){
                 }else if(value=="cos"){
                     return cos(Nodeeval(*node.children[0]));
                 }else if(value=="log"){
-                    return log(Nodeeval(*node.children[0]))/log(Nodeeval(*node.children[1]));
+                    left=Nodeeval(*node.children[0]);
+                    if(left==1){
+                        return 0;
+                    }
+                    return log(Nodeeval(*node.children[1]))/log(left);
                 }else{
                   //fucntion type does not exits 
                   return 0;
@@ -192,6 +282,7 @@ double Tree::Nodeeval(Node& node){
                 return 0;
                 break;
         }
+    return 0;
 }
 
 //operator overloading

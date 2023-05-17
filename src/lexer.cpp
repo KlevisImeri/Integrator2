@@ -34,34 +34,42 @@ bool Lexer::tokenize(){
                 number += str[i];
                 i++;
             }
-            Token token(TokenType::NUMBER, number);
-            tokenList.push_back(token);
-        } else if (isalpha(str[i])) {  // identifier or function name
+            tokenList.push_back({TokenType::NUMBER, number});
+        } else if (isalpha(str[i])) { // identifier or function name
+            if(!tokenList.empty() && (tokenList.back().type == TokenType::NUMBER || tokenList.back().type == TokenType::PAREN_RIGHT)){
+                tokenList.push_back({TokenType::OPERATOR, "*"});
+            }  
             string name = "";
-            while (i < size && (isalnum(str[i]) || str[i] == '_')) {
+            while (i < size && (isalnum(str[i]) || str[i] == '_')){
                 name += str[i];
                 i++;
             }
             if (name == "x") {  // treat "x" as identifier
-                Token token(TokenType::VARIABLE, name);
-                tokenList.push_back(token);
-            }else if (name == "e") {  // treat "x" as identifier
+                tokenList.push_back({TokenType::VARIABLE, name});
+            }else if (name == "e") {  // treat "e" as identifier
                 Token token(TokenType::EULER, name);
                 tokenList.push_back(token);
-            }else if (name == "pi") {  // treat "x" as identifier
+            }else if (name == "pi") {  // treat "pi" as identifier
                 Token token(TokenType::PI, name);
                 tokenList.push_back(token);
             }else {  // treat other identifiers as function names
                 Token token(TokenType::FUNCTION, name);
                 tokenList.push_back(token);
             }
-        } else if (str[i] == '+' || str[i] == '-' || str[i] == '*' || str[i] == '/' || str[i] == '^') {  // operator
-            Token token(TokenType::OPERATOR, string(1, str[i]));
-            tokenList.push_back(token);
-            i++;
+        } else if (str[i] == '+' || str[i] == '-') {  // operator type1
+            if(!tokenList.empty() && tokenList.back().type == TokenType::PAREN_LEFT){
+                tokenList.push_back({TokenType::NUMBER, "0"});
+            } 
+            tokenList.push_back({TokenType::OPERATOR, string(1, str[i])});
+            i++; 
+        } else if (str[i] == '*' || str[i] == '/' || str[i] == '^') {  // operator type2
+            tokenList.push_back({TokenType::OPERATOR, string(1, str[i])});
+            i++; 
         } else if (str[i] == '('){  // parentheses
-            Token token(TokenType::PAREN_LEFT, string(1, str[i]));
-            tokenList.push_back(token);
+            if(!tokenList.empty() && tokenList.back().type == TokenType::NUMBER){
+                tokenList.push_back({TokenType::OPERATOR, "*"});
+            }  
+            tokenList.push_back({TokenType::PAREN_LEFT, string(1, str[i])});
             i++;
         } else if (str[i] == ')'){  // parentheses
             Token token(TokenType::PAREN_RIGHT, string(1, str[i]));
@@ -113,6 +121,34 @@ bool Lexer::tokenizeValid(){
                 return false;
             }
         }
+        //divide by zero (Not using b.search)
+        if(tokenList[i].value=="/"){
+            if(stod(tokenList[i+1].value)==0){
+                cout<<"You can't divide by 0!"<<endl;
+                return false;
+            }
+        }
+
+        //you cant have 2.333/4.222
+
+        //some function have several inputs
+        // if(tokenList[i].type==TokenType::FUNCTION){
+        //     int parameters = FUNCTION_ARITY.at(tokenList[i].value);
+        //     int comas=0;
+        //     for(int j=i; tokenList[i].type != TokenType::PAREN_RIGHT; j++){
+        //         if(tokenList[j].type == TokenType::COMA){
+        //             comas++;
+        //         }
+        //     }
+
+        //     if(parameters > comas){  
+        //         cout<<"The function takes "<< parameters << " parameters"<<endl;
+        //         return false;
+        //     }
+
+        // }
+
+        return true;
     }
     //parentheses
     if(openParen > closeParen){
@@ -126,15 +162,6 @@ bool Lexer::tokenizeValid(){
 
 
     //2. x surrounded by operands or nothing
-    
-
-    //3.  divide by zero (Not using b.search)
-    for(int i = 0; i<tokenList.size(); i++){
-        if(tokenList[i].type==TokenType::NUMBER && tokenList[i].value== "0"){
-            cout<<"You can't divide by 0!"<<endl;
-            return false;
-        }
-    }
 
     return true;
 }

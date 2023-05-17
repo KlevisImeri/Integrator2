@@ -12,7 +12,7 @@ class Parser{
     Tree tree;
     vector<Token> output;
  public:
-    Tree& getTree(){return tree;}
+    Tree& getFunction(){return tree;}
     vector<Token> shunting_yard(const vector<Token>& tokens);
     bool parse(vector<Token> tokens);
 };

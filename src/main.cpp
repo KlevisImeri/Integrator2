@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "menu.h"
-#include "string.h" 
 #include "lexer.h" 
 #include "tree.h"
 #include "token.h"
 #include "node.h"
 #include "parser.h"
 #include "bmpimage.h"
+#include <cmath>
+
 
 using namespace std;
 // menu→→integrator
@@ -20,13 +21,15 @@ using namespace std;
 // ↓
 // Output
 
-/*To do: 
-    1. make the nodes dynamically allocated in the heap
-    2. write the parser:
-        1. shuntung yard
-        2. expression tree
-    3. write the evaluator (integrtor)
-    4. write image creator (inheritance file?)
+/*To do:
+    1. make shure the nodes are deleted if allocated dynamically (chechk it through class objt counter)
+    2. write the evaluator (integrtor)
+    3. Error handling in lexer parser and evaluator
+    3. write mutiple interface inheritance
+    4. write a class caled integrator
+    5. build a struct for menu input
+    6. write the documentation
+
 */
 int main(){
     Menu menu(-3.14, 3.14, 0.01);
@@ -37,16 +40,16 @@ int main(){
     lexer.tokenize();
     lexer.print();
     parser.parse(lexer.getTokenList());
+    
 
     BmpImage image;
     image.backgroundcolor({24,25,26});
-    image.verticalLine(0,{255,255,255});
-    image.verticalLine(1,{255,255,255},0.1);
-    image.verticalLine(-1,{255,255,255},0.1);
-    image.horizontalLine(0,{255,255,255});
-    image.function(parser.getTree(), {225,225,225});
+    image.resize(7);
+    image.integral(parser.getFunction(), menu.getStart(), menu.getEnd(), menu.getSize());
+    image.plane();
+    image.function(parser.getFunction());
+    cout<<"hello"<<endl;
     image.create();
-    
 
     return 0;
 
