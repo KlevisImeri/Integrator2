@@ -28,5 +28,5 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp
 run: $(TARGET)
 	./$(TARGET) < input.txt
 
-clean:
+clear:
 	rm -f $(OBJS) $(TARGET)

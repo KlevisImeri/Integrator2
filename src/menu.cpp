@@ -1,19 +1,48 @@
-#include <iostream>
-// #include <cstdlib>
 #include "menu.h"
 
-using namespace std;
+bool Menu::isValidDouble(const string str) const{
+    if (str.empty()) return false;
+
+    bool hasDecimalPoint = false;
+    bool hasDigit = false;
+
+    for (int i = 0; i < str.size(); i++) {
+        if (i == 0 && (str[i] == '-' || str[i] == '+')) {
+            continue;  // Skip the sign character if it's the first character
+        } else if (str[i] == '.') {
+            if (hasDecimalPoint) {
+                return false;  // Multiple decimal points are not allowed
+            }
+            hasDecimalPoint = true;
+        } else if ('0' <= str[i] && str[i] <= '9') {
+            hasDigit = true;
+        } else {
+            return false;  // Invalid character
+        }
+    }
+
+    return hasDigit;
+}
+
+void Menu::waitEnter() const{
+    cout<<"Press enter to continue!";
+    char n;
+    do{
+        cin.ignore();
+        cin.get(n);
+    }while(n!='\n');
+}
 
 Menu::Menu(double X_0, double X_n, double dx){
-     this->dx= dx; 
-     this->X_0= X_0; 
-     this->X_n= X_n;
-     input= 0;
+     this->dx=to_string(dx);
+     this->X_0=to_string(X_0); 
+     this->X_n=to_string(X_n);
+     input='\0';
 }
 
 void Menu::start(){
     do{
-        system("clear");
+        system("clear"); //may depend on the system
 
         cout<<"dx = "<<dx<<"  X_0 ="<<X_0<<"  X_n = "<<X_n<<endl;
         cout<<"   1.Change dx."     <<endl;
@@ -23,21 +52,43 @@ void Menu::start(){
         cout<<"Enter option: ";
         cin >> input;
 
+        string x;
         switch(input){
-            case 1:
+            case '1':
                 cout<<"Enter partition: ";
-                cin>>dx;
+                cin>>x;
+                if(isValidDouble(x)){
+                    dx=x;
+                }else{
+                    cout<<"Please enter a valid float pointing number!"<<endl;
+                    waitEnter();
+                }
                 break;
-            case 2:
+            case '2':
                 cout<<"Enter Lower bound: ";
-                cin>>X_0;
+                cin>>x;
+                if(isValidDouble(x)){
+                    X_0=x;
+                }else{
+                    cout<<"Please enter a valid float pointing number!"<<endl;
+                    waitEnter();
+                }
                 break;
-            case 3:
+            case '3':
                 cout<<"Enter Upper bound: ";
-                cin>>X_n;
+                cin>>x;
+                if(isValidDouble(x)){
+                    X_n=x;
+                }else{
+                    cout<<"Please enter a valid float pointing number!"<<endl;
+                    waitEnter();
+                }
                 break;
             }          
-    }while(input!=9);
+    }while(input!='9');
+
+    //if one of the inputs is not double
+    if(!isValidDouble(dx) || !isValidDouble(X_0) || !isValidDouble(X_n)) throw InvalidDoubleInput();
 }
 
 void Menu::print() const{

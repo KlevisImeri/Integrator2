@@ -8,8 +8,8 @@ for file in src/*.cpp; do
 done
 
 # Compile the source files into an executable
+echo g++ $source_files -I./include 
 g++ $source_files -I./include 
-
 # Run the program
 #./a.out < input.txt
 

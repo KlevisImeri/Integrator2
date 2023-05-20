@@ -1,292 +1,168 @@
 #include "tree.h"
 
-//constuctors
-Tree::Tree(){}
-Tree::Tree(Node node):root(node),type(NORMAL),xValue(0){}
-Tree::Tree(TokenType type, string str):root(type,str),type(NORMAL),xValue(0){}
-
-//methods
-void Tree::print(const Node& node, string prefix, bool lastone) const{
-    cout<< prefix;
+void Tree::print(ostream& os, const Node& node, string prefix, bool lastone) const{
+    os<< prefix;
     if(lastone){
-        node.print(true);
+        node.print(os,true);
     }else{
-        node.print(false);
+        node.print(os,false);
     }
-    cout<<endl;
+    os<<endl;
     if(node.hasChildren()){
         int size = node.numberOfChildren();
         for(int i = 0; i<size; i++){
             if(i+1==size){
-                Tree::print(*(node.getChildAtIndex(i)),prefix+"     ",true);
+                print(os,*(node.getChildAtIndex(i)),prefix+"     ",true);
             }else{
-                Tree::print(*(node.getChildAtIndex(i)),prefix+"     ",false);
+                print(os,*(node.getChildAtIndex(i)),prefix+"     ",false);
             }
             
         }
     }
 };
 
-void Tree::buildExpressionTree(vector<Token> tokens){
-    type = EXPRESSION;
+void Tree::buildExpressionTree(vector<Token>& tokens, Node* node){
+    // Nothing left
     if (tokens.empty()) {return;}
-    root.data = tokens.back();
-    tokens.pop_back();
-    
+
+    // Special case for root
+    if(node==NULL){
+        cout<<"root"<<endl;
+        type = EXPRESSION;
+        node = &root;
+        root.data = tokens.back();
+        tokens.pop_back();
+    }
+
+    // Creating the tree
     int numchildren = 0;
-    if(root.data.type == TokenType::FUNCTION){
-        numchildren = FUNCTION_ARITY.at(root.data.value);
-    }else if(root.data.type == TokenType::OPERATOR){
+    if(node->data.type == FUNCTION){
+        numchildren = FUNCTION_ARITY.at(node->data.value);
+    }else if(node->data.type == OPERATOR){
         numchildren = 2;
     }else{
         return;
     }
     for(int i = 0; i<numchildren; i++){
-        if (tokens.empty()) {return;}
-        root.addChild(tokens.back());
+        if (tokens.empty()){
+            throw RuntimeError("Not enough tokens for expression!");
+            return;
+        }
+        node->addChild(tokens.back());
         tokens.pop_back();
-        NodeExpressionTree(*(root.children[i]),tokens);
+        buildExpressionTree(tokens,node->children[i]);
     }
 }
 
-void Tree::NodeExpressionTree(Node& node, vector<Token>& tokens){
-    //cout<<node.data<<": ";
-    if(tokens.empty()){ return;}
-    int numchildren = 0;
-    if(node.data.type == TokenType::FUNCTION){
-        numchildren = FUNCTION_ARITY.at(node.data.value);
-    }else if(node.data.type == TokenType::OPERATOR){
-        numchildren = 2;
-    }else{
-        return;
+double Tree::evaluate(double x, Node* node){
+    if(node==NULL){
+        //cout<<"NULL";
+        node = &root;
     }
-    for(int i = 0; i<numchildren; i++){
-        if (tokens.empty()) {return;}
-        node.addChild(tokens.back());
-        tokens.pop_back();
-       //cout<<*(node.children[i])<<endl;
-        NodeExpressionTree(*(node.children[i]),tokens);
-    }
-}
-bool Tree::odd(int x){
-    return (x)%2==1;
-}
-double Tree::evaluate(double x){
-    //cout<<root<<endl;
+    //out<<*node<<endl;
     if(type!=EXPRESSION){
         cout<<"You can not evaluate a non expression tree!"<<endl;
         return 0;
     };
-    xValue = x;
-    string value = root.data.value;
+    string value = node->data.value;
     double left, right, base;
-    switch (root.data.type) {
-        case TokenType::NUMBER:
-        //cout<<"number"<<endl;
+    switch (node->data.type) {
+        case NUMBER:
+           // cout<<"number"<<endl;
             return stod(value);
             break;
-        case TokenType::OPERATOR:
+        case OPERATOR:
             //cout<<"operator"<<value[0]<<endl;
+            right = evaluate(x, node->children[0]);
+            left = evaluate(x, node->children[1]);
             switch (value[0]){
                 case '+':
-                    if(root.children[1]==NULL){
-                        return 0+Nodeeval(*root.children[0]);
-                    }
-                    return Nodeeval(*root.children[1])+Nodeeval(*root.children[0]);
+                    return left+right;
                     break;
                 case '-':
-                    if(root.children[1]==NULL){
-                        return 0-Nodeeval(*root.children[0]);
-                    }
-                    //cout<<Nodeeval(*root.children[1])<<'-'<<Nodeeval(*root.children[0])<<'\t';
-                    return Nodeeval(*root.children[1])-Nodeeval(*root.children[0]);
+                    //cout<<left<<'-'<<right<<'='<<left-right<<endl;
+                    return left-right;
                     break;
                 case '*':
-                    //cout<<Nodeeval(*root.children[1])<<'*'<<Nodeeval(*root.children[0])<<endl;
-                    return Nodeeval(*root.children[1])*Nodeeval(*root.children[0]);
+                    //cout<<left<<'*'<<right<<endl;
+                    return left*right;
                     break;
                 case '/':
-                    left  = Nodeeval(*root.children[1]);
-                    right = Nodeeval(*root.children[0]);
                     //cout<<left<<'/'<<right<<endl;
                     if(right>-0.0000001 && right<0.0000001){
-                        cout<<"You can not divide by 0! Make shure you Interval is right!"<<endl;
-                        return 0;
-                    }
+                        throw RuntimeError("You can not divide by 0! Make shure you Interval is right!");
+                    }//here may lead to error rrturn 0;
                     return left/right;
                     break;
                 case '^':
-                    if(root.children[0]->data.value=="/"){//special case when you have a division
-                        left = Nodeeval(*(root.children[0]->children[1])); //numerator
-                        right = Nodeeval(*(root.children[0]->children[0])); //denominator
-                        base = Nodeeval(*root.children[1]); //base of the pewer
+                    if(node->children[0]->data.value=="/"){//special case when you have a division
+                        left = evaluate(x,node->children[0]->children[1]); //numerator
+                        right = evaluate(x,node->children[0]->children[0]); //denominator
+                        base = evaluate(x,node->children[1]); //base of the pewer
                         //cout<<base<<"^("<<left<<'/'<<right<<')'<<endl;
                         if(base>-0.0000001 && base<0.0000001) return 0;
                         if(base<0){//for negative x values
                             int gcd = __gcd((int)left,(int)right);
                             left/=gcd; right/=gcd;
-                            if(odd(right)){ //if denominator is odd
-                                if(odd(left)){
+                            if((int)right %2){ //if denominator is odd
+                                if((int)left %2){
                                     return -pow(abs(base),left/right); //if left is odd you invert
                                 }else{
-                                return pow(abs(base),left/right); //if left is even you dont have to invert
+                                    return pow(abs(base),left/right); //if left is even you dont have to invert
                                 }
                             }
                             return NAN;
                         }
                     }
-                    left = Nodeeval(*root.children[0]);
-                    base = Nodeeval(*root.children[1]);
-                    cout<<base<<'^'<<left<<endl;
-                    if(base>-0.0000001 && base<0.0000001) return 0; //its to close to 0 the power fucntion just can not compute
-                    return pow(base,left); //positive x;
+                    cout<<left<<'^'<<right<<endl;
+                    if(left>-0.0000001 && left<0.0000001) return 0; //its to close to 0 the power fucntion just can not compute
+                    return pow(left,right); //positive x;
                     break;
                 default:
+                    throw RuntimeError("Operator '"+value+"' is not defined!");
                     break;
             }
-            break;
-        case TokenType::FUNCTION:
+        break;
+        case FUNCTION:
+            right = evaluate(x, node->children[0]);
             //cout<<"function"<<endl;
             if(value=="sin"){
-                return sin(Nodeeval(*root.children[0]));
+                return sin(right);
             }else if(value=="cos"){
-                return cos(Nodeeval(*root.children[0]));
+                return cos(right);
+            }else if(value=="tan"){
+                return tan(right);
             }else if(value=="log"){
-                double left=Nodeeval(*root.children[0]);
-                if(left==1){
+                left = evaluate(x, node->children[1]);
+                if(right==1){
                     return 0;
                 }
-              return log(Nodeeval(*root.children[1]))/log(left);
+              return log(left)/log(right);
             }else{
-              //fucntion type does not exits
-              return 0;
+              throw RuntimeError("Function '"+value+"' is not defined!");
             }
             break;
-        case TokenType::VARIABLE:
-            //cout<<"Variable"<<endl;
-            return xValue;
+        case VARIABLE:
+            //cout<<"Variable: "<<x<<endl;
+            return x;
             break;
-        case TokenType::EULER:
+        case EULER:
             //cout<<"Euler"<<endl;
             return 2.71828;
             break;
-        case TokenType::PI:
+        case PI:
             //cout<<"PI"<<endl;
             return 3.14159265359;
             break;
         default:
-            // Handle unknown token type
-            return 0;
+            throw RuntimeError("Unknown token type!");
             break;
     }
     return 0;
 }   
-double Tree::Nodeeval(Node& node){
-    //cout<<node<<endl;
-    string value = node.data.value;
-    double left, right, base;
-        switch (node.data.type) {
-            case TokenType::NUMBER:
-                //cout<<"number"<<endl;
-                return stod(value);
-                break;
-            case TokenType::OPERATOR:
-            //cout<<"operator node"<<value[0]<<endl;
-                switch (value[0]){
-                    case '+':
-                        if(node.children[1]==NULL){
-                            return 0+Nodeeval(*node.children[0]);
-                        }
-                        return Nodeeval(*node.children[1])+Nodeeval(*node.children[0]);
-                        break;
-                    case '-':
-                        //cout<<"minus"<<endl;
-                        if(node.children[1]==NULL){
-                            return 0-Nodeeval(*node.children[0]);
-                        }
-                        return Nodeeval(*node.children[1])-Nodeeval(*node.children[0]);
-                        break;
-                    case '*':
-                        return Nodeeval(*node.children[1])*Nodeeval(*node.children[0]);
-                        break;
-                    case '/':
-                        left = Nodeeval(*node.children[1]);
-                        right = Nodeeval(*node.children[0]);
-                        if(right>-0.0000001 && right<0.0000001){
-                            cout<<"You can not divide by 0! Make shure your Interval is right!"<<endl;
-                            return 0;
-                        }
-                        return left/right;
-                        break;
-                    case '^':
-                        //cout<<"power"<<endl;
-                        if(node.children[0]->data.value=="/"){//special case when you have a division
-                            left = Nodeeval(*(node.children[0]->children[1])); //numerator
-                            right = Nodeeval(*(node.children[0]->children[0])); //denominator
-                            base = Nodeeval(*node.children[1]); //base of the pewer
-                            //cout<<base<<"^("<<left<<'/'<<right<<')'<<endl;
-                             if(base>-0.0000001 && base<0.0000001) return 0;
-                            if(base<0){//for negative x values
-                                int gcd = __gcd((int)left,(int)right);
-                                left/=gcd; right/=gcd;
-                                if(odd(right)){ //if denominator is odd
-                                    if(odd(left)){
-                                        return -pow(abs(base),left/right); //if left is odd you invert
-                                    }else{
-                                    return pow(abs(base),left/right); //if left is even you dont have to invert
-                                    }
-                                }
-                                return NAN;
-                            }
-                        }   
-                        left = Nodeeval(*node.children[0]);
-                        base = Nodeeval(*node.children[1]);
-                        // cout<<base<<'^'<<left<<endl;
-                        if(base>-0.0000001 && base<0.0000001) return 0; //its to close to 0 the power fucntion just can not compute
-                        return pow(base,left);
-                        break;
-                    default:
-                        //return operator doesnt exits
-                        cout<<"Operator doesn't exits"<<endl;
-                        return 0;
-                        break;
-                }
-                break;
-            case TokenType::FUNCTION:
-                if(value=="sin"){
-                    return sin(Nodeeval(*node.children[0]));
-                }else if(value=="cos"){
-                    return cos(Nodeeval(*node.children[0]));
-                }else if(value=="log"){
-                    left=Nodeeval(*node.children[0]);
-                    if(left==1){
-                        return 0;
-                    }
-                    return log(Nodeeval(*node.children[1]))/log(left);
-                }else{
-                  //fucntion type does not exits 
-                  return 0;
-                }
-                break;
-            case TokenType::VARIABLE:
-                return xValue;
-                break;
-            case TokenType::EULER:
-                return 2.71828;
-                break;
-            case TokenType::PI:
-                return 3.14159265359;
-                break;
-            default:
-                // Handle unknown token type
-                return 0;
-                break;
-        }
-    return 0;
-}
 
 //operator overloading
 ostream& operator<<(ostream& os, const Tree& tree){
-    tree.print(tree.root,"",true);
+    tree.print(os,tree.root,"",true);
     return os;  
 }

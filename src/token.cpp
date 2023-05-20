@@ -1,7 +1,6 @@
 #include "token.h"
-#include <iostream>
 
-std::ostream& operator<<(std::ostream& os, const Token& t){
+ostream& operator<<(ostream& os, const Token& t){
     os << "{";
     switch(t.type) {
         case TokenType::NONE:

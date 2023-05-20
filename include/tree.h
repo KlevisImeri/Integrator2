@@ -5,6 +5,7 @@
 #include "rational.h"
 #include "node.h"
 #include "token.h"
+#include "exceptions.h"
 using namespace std;
 
 
@@ -17,25 +18,21 @@ enum Treetype{
 
 class Tree{
   Treetype type;
-  double xValue;
   Node root;
-  bool odd(int x);
- public:
-   //constuctors
-  Tree();
-  Tree(Node node);
-  Tree(TokenType type, string str);
-    
-   //methods
-   void buildExpressionTree(vector<Token> tokens);
-   void NodeExpressionTree(Node& node, vector<Token>& tokens);
-   double evaluate(double x);
-   double Nodeeval(Node& node);
+  public:
+  //constuctors
+  Tree():root(),type(NORMAL){}
+  Tree(Node node):root(node),type(NORMAL){}
+  Tree(TokenType type, string str):root(type,str),type(NORMAL){}
+  // ~Tree(){cout<<"deleting Tree"<<endl;}
+  //methods
+  void buildExpressionTree(vector<Token>& tokens, Node* node=NULL);
+  double evaluate(double x, Node* node = NULL);
    
-   void print(const Node& root, string prefix, bool lastone) const;
+  void print(ostream& os, const Node& root, string prefix, bool lastone) const;
 
-   //operator overloading
-   friend std::ostream& operator<<(ostream& os, const Tree& tree);
+  //operator overloading
+  friend std::ostream& operator<<(ostream& os, const Tree& tree);
 };
 
 

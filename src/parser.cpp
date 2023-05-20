@@ -40,7 +40,7 @@ vector<Token> Parser::shunting_yard(const vector<Token>& tokens){
             }else if(!op_stack.empty() && op_stack.top().type == TokenType::PAREN_LEFT) {
                 op_stack.pop(); // Discard the left parenthesis
             }else{
-                throw std::runtime_error("Mismatched parentheses");
+                throw RuntimeError("Mismatched parentheses");
             }
         }
         // //To print the operator stack
@@ -51,7 +51,7 @@ vector<Token> Parser::shunting_yard(const vector<Token>& tokens){
         //         temp_stack.pop();
         //     }
         // cout <<endl;
-        // //To print the output ouput
+        //To print the output ouput
         // for(auto i: output){
         //     cout<<i;
         // }
@@ -62,7 +62,7 @@ vector<Token> Parser::shunting_yard(const vector<Token>& tokens){
     while (!op_stack.empty()) {
         if (op_stack.top().type == TokenType::PAREN_RIGHT || op_stack.top().type == TokenType::PAREN_LEFT) {
             if(numberFunctions == 0){
-                throw std::runtime_error("Mismatched parentheses");
+                throw RuntimeError("Mismatched parentheses");
             }else{ 
                 numberFunctions--;
             }
@@ -75,16 +75,27 @@ vector<Token> Parser::shunting_yard(const vector<Token>& tokens){
 }
 
 bool Parser::parse(vector<Token> tokens){
+    // Reverse polish notation
     shunting_yard(tokens);
     
-    // //Printing the stack
-    // for(auto i : output){
-    //     cout<<i;
-    // }
-    // cout<<endl;
+    // Printing the Output
+    for(auto i : output){
+        cout<<i<<endl;
+    }
+    
+    // Building tree
+    vector<Token> temp = output;
+    tree.buildExpressionTree(temp);
 
-    tree.buildExpressionTree(output);
     cout<<tree;
 
     return false;
+}
+
+double Parser::integrate(MenuData limits){
+    double sum=0;
+    for(double x=limits.X_0; x<=limits.X_n; x+=limits.dx){
+        sum+=tree.evaluate(x)*limits.dx;
+    }
+    return sum;
 }

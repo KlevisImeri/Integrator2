@@ -91,7 +91,13 @@ void BmpImage::backgroundcolor(rgb color){
 	}
 };
 void BmpImage::rectangle(double x, double y, double width, double height, rgb color,rgb bordercolor){
-	//Exaching becuase we only go up and right when coloring
+	// Making it not exceed the size limit
+	if(width>size) width=size;
+	else if(width<-size) width=-size;
+	if(height>size) height=size;
+	else if(height<-size) height=-size;
+
+	// Exaching becuase we only go up and right when coloring
 	if(width < 0){
 		x += width;
 		width=abs(width);
@@ -101,13 +107,14 @@ void BmpImage::rectangle(double x, double y, double width, double height, rgb co
 		height=abs(height);
 	}
 	
-	//Cordinates of the endings of the corners
+	// Cordinates of the endings of the corners
 	double W = x+width;
 	double H = y+height;
 
-	//Drawing the main square
+	// Drawing the main square
 	for(double i = x; i <= W; i+=onePixel){
 		for(double j = y; j<=H; j+=onePixel){
+			//cout<<i<<'\t'<<j<<endl;
 			point(i,j, color);
 		}		
 	}
@@ -118,7 +125,7 @@ void BmpImage::rectangle(double x, double y, double width, double height, rgb co
 		point(W,j,bordercolor);
 	}
 	// Horizontal border lines
-	for(double i = x; i <= W; i+=onePixel){
+	for(double i = x; i<=W; i+=onePixel){
 		point(i,y,bordercolor);
 		point(i,H,bordercolor);
 	}
@@ -171,14 +178,14 @@ void BmpImage::plane(int _resize,  rgb color){
 	}		
 }
 void BmpImage::function(Tree& expression, rgb color){
-	int y;
 	for(double x = -size; x<size; x+=onePixel){
+		//cout<<expression.evaluate(x)<<endl;
 		point(x,expression.evaluate(x),color);
 	}
 }
-void BmpImage::integral(Tree& expression, double start, double end, double size , rgb color, rgb bordercolor){
-	for(double i=start; i<=end; i+=size){
-		rectangle(i, 0, size, expression.evaluate(i), color, bordercolor);
+void BmpImage::integral(Tree& expression, MenuData limits, rgb color, rgb bordercolor){
+	for(double i=limits.X_0; i<=limits.X_n; i+=limits.dx){
+		rectangle(i, 0, limits.dx, expression.evaluate(i), color, bordercolor);
 	}
 }
 void BmpImage::create(){

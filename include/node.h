@@ -7,28 +7,26 @@
 using namespace std;
 
 class Node{
- private:
     Token data;
     vector<Node*> children;
  public:
     //constructors
-    Node();
-    Node(Token data);
-    Node(TokenType type, string str);
+    Node(){}
+    Node(Token data):data(data),children(vector<Node*>(0)){}
+    Node(TokenType type, string str):data(type,str){}
     //destructor
     ~Node();
-
     //seters|geters
-    void setData(Token data);
-    Token getData();
-    vector<Node*> getChildren();
-    Node* getChildAtIndex(int i) const;
+    void setData(Token data){this->data = data;}
+    Token getData(){return data;}
+    vector<Node*> getChildren(){return children;}
+    Node* getChildAtIndex(int i) const {return children[i];}
 
     //methods    
-    int numberOfChildren() const;
-    bool hasChildren() const;
+    int numberOfChildren() const{return children.size();}
+    bool hasChildren() const{return children.size()!=0;}
     void addChild(Token token);
-    void print(bool lastone) const;
+    void print(ostream& os, bool lastone) const;
 
     //operator overloading
     friend ostream& operator<<(ostream& os, const Node& node);

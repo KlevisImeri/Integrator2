@@ -1,13 +1,17 @@
 9
 \n
 \n
+tan(x)
+234123424.12341234-12342.234
+1234234-132341412
 
-sin(2x)cos(4x-3)log(10x,e)
 sin(x)
 cos(x)
 sin(2x)
+sin(2*x^2)
 e^(x^2)*sin(x)
 sin(2sin(2sin(2sin(x))))
+sin(2x)cos(4x-3)log(10x,e)
 -----------------
 x
 -x

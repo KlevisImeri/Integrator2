@@ -4,7 +4,14 @@
 #include <fstream>
 #include <vector>
 #include "tree.h"
+#include "menu.h"
 using namespace std;
+
+// struct MenuData{
+//   double dx;
+//   double X_0;
+//   double X_n;
+// };
 
 struct rgb{
     unsigned int r, g, b;
@@ -33,7 +40,6 @@ struct BitmapInfoHeader {
 };
 
 class BmpImage{
-private:
     string name;
     int width;          //widht of the image  (px)
     int height;         //height if the image (px)
@@ -64,7 +70,7 @@ public:
     void plane(rgb color={255, 255, 255});
     void plane(int resize, rgb color={255, 255, 255});
     void function(Tree& expression, rgb color={255, 255, 255});
-    void integral(Tree& expression, double start, double end, double size, rgb color={222, 159, 78}, rgb bordercolor={255,77,77});
+    void integral(Tree& expression, MenuData limits, rgb color={222, 159, 78}, rgb bordercolor={255,77,77});
     void create();
 };  
 

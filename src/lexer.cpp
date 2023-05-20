@@ -1,172 +1,210 @@
 #include "lexer.h"
 
-
-Lexer::Lexer():str(""){}
-Lexer::Lexer(string str):str(str){}
-Lexer::Lexer(const Lexer& lexer):str(lexer.str){}
-
 void Lexer::askForFunction(){
-    do{
-        //Wait for the user to read the error
-        char n;
-        do{
-            cout<<"Press enter to continue!";
-            cin.ignore();
-            cin.get(n);
-        }while(n!='\n');
-
+    bool success = false;
+    char n;
+    while (!success) {
+        success = true; 
         system("clear");
         cout<<"Type the function:";
         cin>>str;
-    }while(!Lexer::tokenizeValid());
+        try{
+            tokenize();
+        }catch (const exception& e) {
+            success = false;  
+            cerr<<e.what()<<endl;
+        }
+        // Wait till the user reads
+        if(!success){
+            cout<<"Press enter to continue!";
+            do{
+                cin.ignore();
+                cin.get(n);
+            }while(n!='\n');
+        }
+    }
 }
-void Lexer::setString(const string& strin){
-    str=strin;
-}
-bool Lexer::tokenize(){
+    
+
+void Lexer::tokenize(){
+    // Preperation
     tokenList.clear();
     int i = 0;
     int size = str.length();
+    int Paren_left = 0;
+    int Paren_right = 0;
+
+    // Tokenizing
     while (i < size){
-        if (isdigit(str[i])) {  // number
+
+        // Number
+        if (isdigit(str[i])) {  
             string number = "";
             while (i < size && (isdigit(str[i]) || str[i] == '.')) {
                 number += str[i];
                 i++;
             }
-            tokenList.push_back({TokenType::NUMBER, number});
-        } else if (isalpha(str[i])) { // identifier or function name
-            if(!tokenList.empty() && (tokenList.back().type == TokenType::NUMBER || tokenList.back().type == TokenType::PAREN_RIGHT)){
-                tokenList.push_back({TokenType::OPERATOR, "*"});
+            if(!tokenList.empty() && tokenList.back().value == "/" && stod(number)==0){
+                throw DivByZero();
+            }
+            tokenList.push_back({NUMBER, number});
+        } 
+
+        // Identifier or function name
+        else if (isalpha(str[i])) {
+            // 1. <num>x -> <num>*x 
+            // 2. )x -> )*x
+            if(!tokenList.empty() && (tokenList.back().type == NUMBER || tokenList.back().type == PAREN_RIGHT)){
+                if(tokenList.back().type == OPERATOR){
+                    throw RuntimeError("You have 2 operators one after the other!");
+                } 
+                tokenList.push_back({OPERATOR, "*"});
             }  
+            // Function and constants
             string name = "";
             while (i < size && (isalnum(str[i]) || str[i] == '_')){
                 name += str[i];
                 i++;
             }
-            if (name == "x") {  // treat "x" as identifier
-                tokenList.push_back({TokenType::VARIABLE, name});
-            }else if (name == "e") {  // treat "e" as identifier
-                Token token(TokenType::EULER, name);
-                tokenList.push_back(token);
-            }else if (name == "pi") {  // treat "pi" as identifier
-                Token token(TokenType::PI, name);
-                tokenList.push_back(token);
-            }else {  // treat other identifiers as function names
-                Token token(TokenType::FUNCTION, name);
+            //x
+            if (name == "x") { 
+                tokenList.push_back({VARIABLE, name});
+            }
+            //e            
+            else if (name == "e") {  
+                Token token(EULER, name);
                 tokenList.push_back(token);
             }
-        } else if (str[i] == '+' || str[i] == '-') {  // operator type1
-            if(!tokenList.empty() && tokenList.back().type == TokenType::PAREN_LEFT){
-                tokenList.push_back({TokenType::NUMBER, "0"});
-            } 
-            tokenList.push_back({TokenType::OPERATOR, string(1, str[i])});
-            i++; 
-        } else if (str[i] == '*' || str[i] == '/' || str[i] == '^') {  // operator type2
-            tokenList.push_back({TokenType::OPERATOR, string(1, str[i])});
-            i++; 
-        } else if (str[i] == '('){  // parentheses
-            if(!tokenList.empty() && tokenList.back().type == TokenType::NUMBER){
-                tokenList.push_back({TokenType::OPERATOR, "*"});
-            }  
-            tokenList.push_back({TokenType::PAREN_LEFT, string(1, str[i])});
-            i++;
-        } else if (str[i] == ')'){  // parentheses
-            Token token(TokenType::PAREN_RIGHT, string(1, str[i]));
-            tokenList.push_back(token);
-            i++;
-        } else if (str[i] == ','){
-            Token token(TokenType::COMA, string(1, str[i]));
-            tokenList.push_back(token);
-            i++;
-        }else if (isspace(str[i])) {  // whitespace
-            i++;
-        } else {  // invalid character
-            cout<<"Invalid character: "<<string(1, str[i])<<endl;
-            return false;
-            //throw runtime_error("Invalid character: " + string(1, str[i]));
-        }
-    }
+            //pi
+            else if (name == "pi") {  
+                Token token(PI, name);
+                tokenList.push_back(token);
+            }
+            //function
+            else {
+                if(FUNCTION_ARITY.find(name) == FUNCTION_ARITY.end()){
+                    throw RuntimeError("Invalid function name: "+name);
+                }
+                Token token(FUNCTION, name);
+                tokenList.push_back(token);
+            }
+        } 
 
-    return true;
-}
-bool Lexer::tokenizeValid(){
-    tokenList.clear();
-    if(!tokenize()){
-        return false;
-    } 
+        // Operator +|-
+        else if (str[i] == '+' || str[i] == '-') {  
+            // (x) -> (0+x)
+            if(tokenList.empty() || tokenList.back().type == PAREN_LEFT){
+                tokenList.push_back({NUMBER, "0"});
+            }else if(tokenList.back().type == OPERATOR){
+                throw RuntimeError("You have 2 operators one after the other!");
+            }else if(tokenList.back().type == COMA || tokenList.back().type == PAREN_LEFT){
+                throw RuntimeError(string("The left of operator '")+str[i]+string("' is a wrong token!"));
+            }else if(i+1>=size){
+                throw RuntimeError(string("The right of operator '")+str[i]+string("' is a empty!"));
+            }
+            tokenList.push_back({OPERATOR, str[i]});
+            i++; 
+        } 
 
-    int openParen = 0;
-    int closeParen = 0;
-    for(int i = 0; i<tokenList.size(); i++){
-        if(tokenList[i].value == "("){
-            openParen++;
-        }else if(tokenList[i].value == ")"){
-            closeParen++;
-        }else if(tokenList[i].value == "^" || tokenList[i].value == "/"|| tokenList[i].value == "*"){
+        // Operator *|/
+        else if (str[i] == '*' || str[i] == '/' || str[i] == '^') { 
             //^x /x *x
-            if(i==0){
-                cout<<"The operators '^''*''/' take a value in both sides!";
-                return false;
+            if(tokenList.empty()){
+                throw RuntimeError("The operators '^''*''/' take a value in both sides!");
+            }else if(tokenList.back().type == OPERATOR){
+                throw RuntimeError("You have 2 operators one after the other!");
+            }else if(tokenList.back().type == COMA || tokenList.back().type == PAREN_LEFT){
+                throw RuntimeError(string("The left of operator '")+str[i]+string("' is a wrong token!"));
+            }else if(i+1>=size){
+                throw RuntimeError(string("The right of operator '")+str[i]+string("' is a empty!"));
             }
-            //*- *^ ...
-            if(tokenList[i+1].type==TokenType::OPERATOR){
-                cout<<"You have 2 operators one after the other!";
-                return false;
-            }
-        }else if(tokenList[i].value == "-" || tokenList[i].value == "+"){
-            //-+
-            if(tokenList[i+1].type==TokenType::OPERATOR){
-                cout<<"You have 2 operators one after the other!";
-                return false;
-            }
+            tokenList.push_back({OPERATOR, str[i]});
+            i++; 
+        } 
+        
+        // (
+        else if (str[i] == '('){
+            // <num>() => <num>*() 
+            if(!tokenList.empty() && tokenList.back().type == NUMBER){
+                tokenList.push_back({OPERATOR, "*"});
+            }  
+            tokenList.push_back({PAREN_LEFT, str[i]});
+            Paren_left++;
+            i++;
+        } 
+        
+        // )
+        else if (str[i] == ')'){ 
+            tokenList.push_back({PAREN_RIGHT, str[i]});
+            Paren_right++;
+            i++;
         }
-        //divide by zero (Not using b.search)
-        if(tokenList[i].value=="/"){
-            if(stod(tokenList[i+1].value)==0){
-                cout<<"You can't divide by 0!"<<endl;
-                return false;
-            }
+        
+        // ,
+        else if (str[i] == ','){
+            tokenList.push_back({COMA, str[i]});
+            i++;
         }
-
-        //you cant have 2.333/4.222
-
-        //some function have several inputs
-        // if(tokenList[i].type==TokenType::FUNCTION){
-        //     int parameters = FUNCTION_ARITY.at(tokenList[i].value);
-        //     int comas=0;
-        //     for(int j=i; tokenList[i].type != TokenType::PAREN_RIGHT; j++){
-        //         if(tokenList[j].type == TokenType::COMA){
-        //             comas++;
-        //         }
-        //     }
-
-        //     if(parameters > comas){  
-        //         cout<<"The function takes "<< parameters << " parameters"<<endl;
-        //         return false;
-        //     }
-
-        // }
-
-        return true;
+        
+        // ' '
+        else if (isspace(str[i])) {  
+            i++;
+        } 
+        
+        // invalid character
+        else{ 
+            throw InvalidStringInput(str[i]);
+            break;
+        }
     }
+    //    EXCEPTION HANDLING
     //parentheses
-    if(openParen > closeParen){
-        cout<<"You have more '(' than ')'"<<endl;
-        return false;
-    }else if(openParen < closeParen){
-        cout<<"You have more ')' than '('"<<endl;
-        return false;
+    if(Paren_right!=Paren_left) throw RuntimeError("Mismached '(' and ')'!");
+    // arity of the functions
+    try{
+        for (int i = 0; i < tokenList.size(); i++) {
+            if (tokenList[i].type == FUNCTION) {
+                validArity(tokenList[i], i);
+            }
+        }
+    }catch(const exception& e) {
+        throw;  
     }
-    //check '(' or NUMBER or VARIABLE for OPERATORS '-''+'
 
-
-    //2. x surrounded by operands or nothing
-
-    return true;
+    return;
 }
 
-vector<Token> Lexer::getTokenList(){return tokenList;}
+void Lexer::validArity(Token token, int pos){
+    int commas = 0;
+    bool parameters = false;
+
+    if(tokenList[pos+1].type != PAREN_LEFT) throw RuntimeError("Functions should have '()' at the end!");
+
+    for (int j=pos+2; tokenList[j].type != PAREN_RIGHT; j++){
+        if (tokenList[j].type == COMA) {
+            // Check if the comma is in the right place
+            TokenType left = tokenList[j-1].type;
+            TokenType right = tokenList[j+1].type;
+            if (left != PAREN_LEFT && left!=OPERATOR && right!= PAREN_RIGHT) {
+                commas++;
+            } else {
+                throw RuntimeError("Function parameters and ',' are in the wrong place");
+            }
+        }else if(!parameters) {
+            parameters = true;
+        }
+    }
+
+    int arity = 0;
+    if(parameters){
+        arity = 1 + commas;
+    }
+    //cout<<"arrity: "<<arity<<endl;
+    if (arity != FUNCTION_ARITY.at(token.value)) {
+        throw RuntimeError("The arity of the function is not correct!");
+    }
+}
+
 
 void Lexer::print() const{
     cout<<"Lexer{"<<endl;

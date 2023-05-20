@@ -1,12 +1,9 @@
 #ifndef token_h
 #define token_h
 
-#include <string>
 #include <iostream>
-#include <stack>
-#include <queue>
+#include <string>
 #include <unordered_map>
-
 using namespace std;
 
 // Define operator precedence
@@ -26,7 +23,8 @@ const unordered_map<string, int> FUNCTION_ARITY{
     {"log", 2},
 };
 
-enum class TokenType{
+// Token Types
+enum TokenType{
     NONE,
     NUMBER,
     OPERATOR,
@@ -40,15 +38,16 @@ enum class TokenType{
 };
 
 class Token{
- public:
+public:
     TokenType type;
     string value;
 
-    Token(): type(TokenType::NONE), value(""){}
-    Token(TokenType type, string value) : type(type), value(value){}
-    friend std::ostream& operator<<(std::ostream& os, const Token& t);
+    Token():type(NONE),value(""){}
+    Token(TokenType type, char value):type(type),value(1, value){}
+    Token(TokenType type, string value):type(type),value(value){}
+    friend ostream& operator<<(ostream& os, const Token& t);
 };
 
-std::ostream& operator<<(std::ostream& os, const Token& t);
+ostream& operator<<(ostream& os, const Token& t);
 
 #endif 
