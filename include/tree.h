@@ -15,27 +15,24 @@ enum Treetype{
   EXPRESSION,
 };
 
-
 class Tree{
   Treetype type;
-  Node root;
+  Node<Token> root;
   public:
   //constuctors
   Tree():root(),type(NORMAL){}
-  Tree(Node node):root(node),type(NORMAL){}
-  Tree(TokenType type, string str):root(type,str),type(NORMAL){}
-  // ~Tree(){cout<<"deleting Tree"<<endl;}
+  Tree(Node<Token> node):root(node),type(NORMAL){}
+Tree(TokenType type, string str):root({type,str}),type(NORMAL){}
   //methods
-  void buildExpressionTree(vector<Token>& tokens, Node* node=NULL);
-  double evaluate(double x, Node* node = NULL);
-   
-  void print(ostream& os, const Node& root, string prefix, bool lastone) const;
+  void buildExpressionTree(vector<Token>& tokens, Node<Token>* node=NULL);
+  double evaluate(double x, Node<Token>* node = NULL);
+  void print(ostream& os, const Node<Token>& root, string prefix, bool lastone) const;
 
-  //operator overloading
-  friend std::ostream& operator<<(ostream& os, const Tree& tree);
+  //operator << overloading
+  friend ostream& operator<<(ostream& os, const Tree& tree);
 };
 
-
+//operator << overloading
 ostream& operator<<(ostream& os, const Tree& tree);
 
 #endif

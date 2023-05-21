@@ -20,11 +20,14 @@ class Menu{
   bool isValidDouble(const string str) const;
   void waitEnter() const;
   public:
+  //constructor
   Menu(double X_0=1, double X_n=1, double dx=0.01);
+  //setters|getters
   double getStart() const {return stod(X_0);}
   double getEnd()const {return stod(X_n);}
   double getSize()const {return stod(dx);}
   MenuData getData() const {return {stod(dx),stod(X_0),stod(X_n)};};
+  //methods
   void start();
   void print() const;
 };

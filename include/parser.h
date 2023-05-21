@@ -13,10 +13,13 @@ class Parser{
    Tree tree;
    vector<Token> output;
    public:
+   //constructor
    Parser(vector<Token> tokens){parse(tokens);}
+   //getter
+   Tree& getFunction() {return tree;}
+   //methods
    vector<Token> shunting_yard(const vector<Token>& tokens);
    bool parse(vector<Token> tokens);
-   Tree& getFunction() {return tree;}
    double integrate(MenuData limits);
 };
 

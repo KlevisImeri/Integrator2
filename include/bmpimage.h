@@ -60,7 +60,7 @@ public:
     void resize(int size, int width, int height);
     void pixel(int x, int y, rgb color={255, 255, 255});
     void point(double x, double y, rgb color={255, 255, 255}, bool bold = true);
-    void backgroundcolor(rgb color);
+    void backgroundcolor(rgb color={24,25,26});
     void rectangle(double x, double y, double width, double height, rgb color={222, 159, 78}, rgb bordercolor={255,77,77});
     void line(double slope, double displacement, rgb color={255, 255, 255});
     void horizontalLine(int y, rgb color={255, 255, 255});

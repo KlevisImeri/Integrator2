@@ -84,6 +84,12 @@ void Menu::start(){
                     waitEnter();
                 }
                 break;
+            case '9':
+                break;
+            default:
+                cout<<"Your input is invalid! Make shure you enterd a proper option of the menu!"<<endl;
+                waitEnter();
+                break;
             }          
     }while(input!='9');
 

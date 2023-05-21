@@ -1,5 +1,6 @@
 #include "parser.h"
 
+// https://en.wikipedia.org/wiki/Shunting_yard_algorithm - find more about the algorithm
 // Shunting yard algorithm
 vector<Token> Parser::shunting_yard(const vector<Token>& tokens){
     stack<Token> op_stack; // Operator stack
@@ -79,15 +80,15 @@ bool Parser::parse(vector<Token> tokens){
     shunting_yard(tokens);
     
     // Printing the Output
-    for(auto i : output){
-        cout<<i<<endl;
-    }
+    // for(auto i : output){
+    //     cout<<i<<endl;
+    // }
     
     // Building tree
     vector<Token> temp = output;
     tree.buildExpressionTree(temp);
 
-    cout<<tree;
+    //cout<<tree;
 
     return false;
 }

@@ -5,9 +5,9 @@
 #include <iomanip>
 #include "menu.h"
 #include "lexer.h" 
+#include "node.h"
 #include "tree.h"
 #include "token.h"
-#include "node.h"
 #include "parser.h"
 #include "bmpimage.h"
 
@@ -24,13 +24,10 @@ using namespace std;
 // Output
 
 /*To do:
-    2. write the evaluator (integrtor)
-    3. Error handling in lexer parser and evaluator 
-    3. write mutiple interface inheritance
-    4. write a class caled integrator
-    5. build a struct for menu input
-    6. write the documentation
+    3. write mutiple interface inheritance:
+        printeble 
 
+    6. write the documentation
 */
 int main(){
     Menu menu(-3.14, 3.14, 0.01);
@@ -42,22 +39,28 @@ int main(){
     }
     Lexer lexer;
     lexer.askForFunction();
-    lexer.print();
+    //cout<<lexer;
     Parser parser(lexer.getTokenList());
     cout<<fixed << setprecision(10)<<"Integral: "<<parser.integrate(menu.getData())<<endl;
+    
     // parser.getFunction().evaluate(3);
     BmpImage image;
-    image.backgroundcolor({24,25,26});
+    image.backgroundcolor(); 
     image.resize(7);
-    image.integral(parser.getFunction(), menu.getData());
+    try{
+        image.integral(parser.getFunction(), menu.getData());
+    }catch(const exception &e){
+        cerr<<e.what()<<endl;
+    }
     image.plane();
-    image.function(parser.getFunction());
+    try{
+        image.function(parser.getFunction());
+    }catch(const exception &e){
+        cerr<<e.what()<<endl;
+    }
     image.create();
-    
-
 
     return 0;
-
 }
 
 

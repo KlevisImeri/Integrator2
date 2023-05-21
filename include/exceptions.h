@@ -13,7 +13,7 @@ class InvalidDoubleInput: public exception{
     }
 };
 
-class InvalidStringInput : public std::exception {
+class InvalidStringInput : public exception {
     string str;
     string msg;
     public:

@@ -206,15 +206,31 @@ void Lexer::validArity(Token token, int pos){
 }
 
 
-void Lexer::print() const{
-    cout<<"Lexer{"<<endl;
-    cout<<" Function: "<<str<<endl;
-    cout<<" Tokens: {";
+void Lexer::print(ostream& os) const{
+    os<<"Lexer{"<<endl;
+    os<<" Function: "<<str<<endl;
+    os<<" Tokens: {";
     for(int i = 0; i<tokenList.size(); i++){
         if(i%3==0){
-            cout<<endl<<"     ";
+            os<<endl<<"     ";
         }
-        cout<<tokenList[i]<<" ";
+        os<<tokenList[i]<<" ";
     }
-    cout<<endl<<" }"<<endl<<"}"<<endl;
+    os<<endl<<" }"<<endl<<"}"<<endl;
+}
+
+void Lexer::operator=(const string& str){
+    string temp = this->str ;
+    this->str = str;
+    try{
+        tokenize();
+    }catch(const exception& e){
+        this->str = temp;
+        cerr<<e.what()<<endl;
+    }
+}
+
+ostream& operator<<(ostream& os, const Lexer& lexer){
+   lexer.print(os);
+   return os;
 }

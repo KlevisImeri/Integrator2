@@ -8,12 +8,13 @@ for file in src/*.cpp; do
 done
 
 # Compile the source files into an executable
-echo g++ $source_files -I./include 
-g++ $source_files -I./include 
+echo g++ $source_files -I./include -g
+g++ $source_files -I./include -g
 # Run the program
 #./a.out < input.txt
 
-
+# Memory leakage
+#valgrind --leak-check=full --show-leak-kinds=all ./a.out
 
 # # Create build directory if it doesn't exist
 # mkdir -p build

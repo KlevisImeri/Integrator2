@@ -1,6 +1,6 @@
 #include "tree.h"
 
-void Tree::print(ostream& os, const Node& node, string prefix, bool lastone) const{
+void Tree::print(ostream& os, const Node<Token>& node, string prefix, bool lastone) const{
     os<< prefix;
     if(lastone){
         node.print(os,true);
@@ -21,13 +21,13 @@ void Tree::print(ostream& os, const Node& node, string prefix, bool lastone) con
     }
 };
 
-void Tree::buildExpressionTree(vector<Token>& tokens, Node* node){
+void Tree::buildExpressionTree(vector<Token>& tokens, Node<Token>* node){
     // Nothing left
     if (tokens.empty()) {return;}
 
     // Special case for root
     if(node==NULL){
-        cout<<"root"<<endl;
+        //cout<<"root"<<endl;
         type = EXPRESSION;
         node = &root;
         root.data = tokens.back();
@@ -54,15 +54,14 @@ void Tree::buildExpressionTree(vector<Token>& tokens, Node* node){
     }
 }
 
-double Tree::evaluate(double x, Node* node){
+double Tree::evaluate(double x, Node<Token>* node){
     if(node==NULL){
         //cout<<"NULL";
         node = &root;
     }
     //out<<*node<<endl;
     if(type!=EXPRESSION){
-        cout<<"You can not evaluate a non expression tree!"<<endl;
-        return 0;
+        throw RuntimeError("You can not evaluate a non expression tree!");
     };
     string value = node->data.value;
     double left, right, base;
@@ -90,18 +89,21 @@ double Tree::evaluate(double x, Node* node){
                 case '/':
                     //cout<<left<<'/'<<right<<endl;
                     if(right>-0.0000001 && right<0.0000001){
-                        throw RuntimeError("You can not divide by 0! Make shure you Interval is right!");
+                        // cout<<"You can not divide by 0! Make shure you Interval is right!";
+                        // cout<<"Program will continue but the result will be not a nubmer (nan)!";
+                        return NAN;
                     }//here may lead to error rrturn 0;
                     return left/right;
                     break;
                 case '^':
-                    if(node->children[0]->data.value=="/"){//special case when you have a division
-                        left = evaluate(x,node->children[0]->children[1]); //numerator
-                        right = evaluate(x,node->children[0]->children[0]); //denominator
+                    //special case when you have a division
+                    if(node->children[0]->data.value=="/"){
                         base = evaluate(x,node->children[1]); //base of the pewer
                         //cout<<base<<"^("<<left<<'/'<<right<<')'<<endl;
                         if(base>-0.0000001 && base<0.0000001) return 0;
                         if(base<0){//for negative x values
+                            left = evaluate(x,node->children[0]->children[1]); //numerator
+                            right = evaluate(x,node->children[0]->children[0]); //denominator
                             int gcd = __gcd((int)left,(int)right);
                             left/=gcd; right/=gcd;
                             if((int)right %2){ //if denominator is odd
@@ -114,7 +116,7 @@ double Tree::evaluate(double x, Node* node){
                             return NAN;
                         }
                     }
-                    cout<<left<<'^'<<right<<endl;
+                    //cout<<left<<'^'<<right<<endl;
                     if(left>-0.0000001 && left<0.0000001) return 0; //its to close to 0 the power fucntion just can not compute
                     return pow(left,right); //positive x;
                     break;

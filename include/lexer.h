@@ -13,15 +13,19 @@ class Lexer{
    vector<Token> tokenList;
    void validArity(Token token, int pos);
    public:
+   //constructor
    Lexer():str(""),tokenList(){}
    Lexer(string str):str(str),tokenList(){}
-   // ~Lexer(){cout<<"Deleting Lexer"<<endl;}
-   void askForFunction();
+   //setters|getters
    void setString(const string& str){this->str=str;}
-   void tokenize();
    string getStr(){return str;}
    vector<Token> getTokenList(){return tokenList;}
-   void print() const;
+   //methods
+   void askForFunction();
+   void tokenize();
+   void print(ostream& os) const;
+   void operator=(const string& str);
 };
-
+//operator << overloading
+ostream& operator<<(ostream& os, const Lexer& lexer);
 #endif 

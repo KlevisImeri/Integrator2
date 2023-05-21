@@ -41,10 +41,11 @@ class Token{
 public:
     TokenType type;
     string value;
-
+    //contructors
     Token():type(NONE),value(""){}
     Token(TokenType type, char value):type(type),value(1, value){}
     Token(TokenType type, string value):type(type),value(value){}
+    //oprator <<
     friend ostream& operator<<(ostream& os, const Token& t);
 };
 
