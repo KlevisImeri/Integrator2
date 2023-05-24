@@ -1,4 +1,4 @@
-![[images/images/bmeLogo.jpg| center |300]]
+!(images/bmeLogo.jpg)
 <center><h4>Faculty of Electrical Engineering and Informatics<h4></center>
 <br><br><br><br><br><br><br><br>
 <center>
