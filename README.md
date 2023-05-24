@@ -1,23 +1,7 @@
-![BME logo](images/bmeLogo.jpg)
-<center><h4>Faculty of Electrical Engineering and Informatics<h4></center>
-<br><br><br><br><br><br><br><br>
-<center>
-	<h2>Basics of Programming 2</h2>
-	<h1>Integrator2 C++ program</h1>
-	<h3>Developers doc</h3>
-	<br><br><br><br><br><br><br><br><br><br><br>
-	Student 
-	<h5>Klevis Imeri</h5>
-	Budapest, May, 2023
-</center>
-<div style="page-break-after: always;"></div>
-
-### Introduction and Problem Statement 
----
+### Introduction 
 Integration plays a major role in sciences. One of the problem aroused in this field is that many of them are unsolvable or very hard to solve, so approximation becomes a valid approach. These leads into development of programs that can approximate integrals using different methods. One of them which is valid is taking the Riemann Sum[^1]. In other words summing up rectangles with width $\Delta x$ and height $f(x)$. The smaller the $\Delta x$ the smaller the error of approximation. This program makes this process easy and visual for the user. Even though the task may seem easy int first hand there are many difficult steps needed to be solved which mimic the problems the compilers solve trying to define a programming language.
 
 ### Solution Design and Implementation
----
 Even though there are many ways of solving the same problem, one of them being implemented in 'Integrator C program'[^2], the design chosen for this program is structurally more compact and easier to expand for further development of the program in the future. The solutions implemented are similar to those needed to build modern compact compilers.
 This section explains each classes purposes:
  - Menu
@@ -232,7 +216,7 @@ Example `oprator<<()`:
 ```
 ├──{FUNCTION: 'cos'}
 ```
-### BmpImage
+#### BmpImage
 ```cpp
 class BmpImage{
     string name;
@@ -282,13 +266,12 @@ class RuntimeError: public exception{};
 class DivByZero: public exception{};
 ```
 It includes the developer class defined exceptions. All the newly defined error types are derived classes form the base exception class. They all publicly inherit exception class.
-<div style="page-break-after: always;"></div>
 
-<center><h4>Flowchart</h4></center>
+### Flowchart
 
-![[images/Flowchart.svg|center|650]]
+![Program FLowchart](images/Flowchart.svg)
 
-<div style="page-break-after: always;"></div>
+
 
 ### Testing and Verification
 ---
@@ -298,7 +281,7 @@ dx = 0.010000  X_0 =-3.140000  X_n = 3.140000
 Type the function: sin(x)
 Integral: -0.0000000000
 ```
-![[images/sin_x.bmp]]
+![Sin Image](images/func0.bmp)
 
 Now we will test with in an interval where division by zero is prominent. The program outputs nan because the Integral is $+\infty$ in this interval;
 ```
@@ -306,7 +289,7 @@ dx = 0.010000  X_0 =-3.140000  X_n = 3.140000
 Type the function: 1/(-x)
 Integral: nan
 ```
-![[images/Pasted image 20230521101037.png]]
+![func4](images/func5.bmp)
 
 Making the width dx of the rectangles is also an option.
 ```
@@ -314,7 +297,7 @@ dx = 0.300000  X_0 =-3.140000  X_n = 3.140000
 Type the function: e^x
 Integral: 20.1743795615
 ```
-![[images/bmpimage.bmp]]
+![func4](images/func4.bmp)
 
 Let us test with more complicated functions and compare it with well established graphing calculators as Desmos[^4]. The output of Desmos will be the integral and the graph.
 ```
@@ -323,7 +306,9 @@ Type the function: sin(2sin(2sin(2sin(x))))
 Integral: 2.8526723995
 ```
 $$\int_{0}^{3.14}\sin(2\sin(2\sin(2\sin(x))))dx=2.8527420$$
-![[images/bmpimage 1.bmp|330]] ![[images/Pasted image 20230521102348.png|330]]
+
+![Program Image](images/func1.bmp) 
+![Desmos Image](images/desmos1.png)
 
 We make the precision larger but the computation time will increase.
 ```
@@ -332,7 +317,8 @@ Type the function: sin(2x)cos(4x-3)log(10x,e)
 Integral: -0.3667504457
 ```
 $$\int_{0.5}^{3.14}\sin(2x)\cos(4x-3)\ln(10x)dx=-0.366786230428$$
-![[images/bmpimage 2.bmp|330]]![[images/Pasted image 20230521103518.png|330]]
+![Program Image](images/func2.bmp) 
+![Desmos Image](images/desmos2.png)
 
 Next case is using NAN to cut of the domain of the function.
 ```
@@ -340,7 +326,7 @@ dx = 0.010000  X_0 =-1.80000  X_n = 1.80000
 Type the function: x^(2/3)+0.9(3.3-x^2)^(1/2)sin(10*pi*x)
 Integral: 3.1960759104
 ```
-![[images/bmpimage 3.bmp]]
+![Func3](images/func3.bmp)
 
 ### Discussion and Future Enhancements
 ---

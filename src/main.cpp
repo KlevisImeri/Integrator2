@@ -23,12 +23,6 @@ using namespace std;
 // ↓
 // Output
 
-/*To do:
-    3. write mutiple interface inheritance:
-        printeble 
-
-    6. write the documentation
-*/
 int main(){
     Menu menu(-3.14, 3.14, 0.01);
     try{
@@ -43,7 +37,6 @@ int main(){
     Parser parser(lexer.getTokenList());
     cout<<fixed << setprecision(10)<<"Integral: "<<parser.integrate(menu.getData())<<endl;
     
-    // parser.getFunction().evaluate(3);
     BmpImage image;
     image.backgroundcolor(); 
     image.resize(7);
