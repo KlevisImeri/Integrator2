@@ -52,7 +52,7 @@ vector<Token> Parser::shunting_yard(const vector<Token>& tokens){
         //         temp_stack.pop();
         //     }
         // cout <<endl;
-        //To print the output ouput
+        // //To print the output ouput
         // for(auto i: output){
         //     cout<<i;
         // }
@@ -79,16 +79,17 @@ bool Parser::parse(vector<Token> tokens){
     // Reverse polish notation
     shunting_yard(tokens);
     
-    // Printing the Output
-    // for(auto i : output){
-    //     cout<<i<<endl;
-    // }
+    //Printing the Output
+    for(auto i : output){
+        cout<<i<<' ';
+    }
+    cout<<endl;
     
     // Building tree
     vector<Token> temp = output;
     tree.buildExpressionTree(temp);
 
-    //cout<<tree;
+    cout<<tree;
 
     return false;
 }

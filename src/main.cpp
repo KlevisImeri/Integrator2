@@ -39,7 +39,7 @@ int main(){
     }
     Lexer lexer;
     lexer.askForFunction();
-    //cout<<lexer;
+    cout<<lexer;
     Parser parser(lexer.getTokenList());
     cout<<fixed << setprecision(10)<<"Integral: "<<parser.integrate(menu.getData())<<endl;
     

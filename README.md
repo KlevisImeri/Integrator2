@@ -1,4 +1,4 @@
-![[bmeLogo.jpg| center |300]]
+![[images/images/bmeLogo.jpg| center |300]]
 <center><h4>Faculty of Electrical Engineering and Informatics<h4></center>
 <br><br><br><br><br><br><br><br>
 <center>
@@ -286,7 +286,7 @@ It includes the developer class defined exceptions. All the newly defined error 
 
 <center><h4>Flowchart</h4></center>
 
-![[Flowchart.svg|center|650]]
+![[images/Flowchart.svg|center|650]]
 
 <div style="page-break-after: always;"></div>
 
@@ -298,7 +298,7 @@ dx = 0.010000  X_0 =-3.140000  X_n = 3.140000
 Type the function: sin(x)
 Integral: -0.0000000000
 ```
-![[sin_x.bmp]]
+![[images/sin_x.bmp]]
 
 Now we will test with in an interval where division by zero is prominent. The program outputs nan because the Integral is $+\infty$ in this interval;
 ```
@@ -306,7 +306,7 @@ dx = 0.010000  X_0 =-3.140000  X_n = 3.140000
 Type the function: 1/(-x)
 Integral: nan
 ```
-![[Pasted image 20230521101037.png]]
+![[images/Pasted image 20230521101037.png]]
 
 Making the width dx of the rectangles is also an option.
 ```
@@ -314,7 +314,7 @@ dx = 0.300000  X_0 =-3.140000  X_n = 3.140000
 Type the function: e^x
 Integral: 20.1743795615
 ```
-![[bmpimage.bmp]]
+![[images/bmpimage.bmp]]
 
 Let us test with more complicated functions and compare it with well established graphing calculators as Desmos[^4]. The output of Desmos will be the integral and the graph.
 ```
@@ -323,7 +323,7 @@ Type the function: sin(2sin(2sin(2sin(x))))
 Integral: 2.8526723995
 ```
 $$\int_{0}^{3.14}\sin(2\sin(2\sin(2\sin(x))))dx=2.8527420$$
-![[bmpimage 1.bmp|330]] ![[Pasted image 20230521102348.png|330]]
+![[images/bmpimage 1.bmp|330]] ![[images/Pasted image 20230521102348.png|330]]
 
 We make the precision larger but the computation time will increase.
 ```
@@ -332,7 +332,7 @@ Type the function: sin(2x)cos(4x-3)log(10x,e)
 Integral: -0.3667504457
 ```
 $$\int_{0.5}^{3.14}\sin(2x)\cos(4x-3)\ln(10x)dx=-0.366786230428$$
-![[bmpimage 2.bmp|330]]![[Pasted image 20230521103518.png|330]]
+![[images/bmpimage 2.bmp|330]]![[images/Pasted image 20230521103518.png|330]]
 
 Next case is using NAN to cut of the domain of the function.
 ```
@@ -340,7 +340,7 @@ dx = 0.010000  X_0 =-1.80000  X_n = 1.80000
 Type the function: x^(2/3)+0.9(3.3-x^2)^(1/2)sin(10*pi*x)
 Integral: 3.1960759104
 ```
-![[bmpimage 3.bmp]]
+![[images/bmpimage 3.bmp]]
 
 ### Discussion and Future Enhancements
 ---

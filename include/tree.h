@@ -22,7 +22,7 @@ class Tree{
   //constuctors
   Tree():root(),type(NORMAL){}
   Tree(Node<Token> node):root(node),type(NORMAL){}
-Tree(TokenType type, string str):root({type,str}),type(NORMAL){}
+  Tree(TokenType type, string str):root({type,str}),type(NORMAL){}
   //methods
   void buildExpressionTree(vector<Token>& tokens, Node<Token>* node=NULL);
   double evaluate(double x, Node<Token>* node = NULL);
