@@ -1,3 +1,7 @@
+
+> [!NOTE]
+> 🔗 **This project is a continuation of the [Integrator](https://github.com/KlevisImeri/Integrator/) project written in C.** 
+
 ### Introduction 
 Integration plays a major role in sciences. One of the problem aroused in this field is that many of them are unsolvable or very hard to solve, so approximation becomes a valid approach. These leads into development of programs that can approximate integrals using different methods. One of them which is valid is taking the Riemann Sum[^1]. In other words summing up rectangles with width $\Delta x$ and height $f(x)$. The smaller the $\Delta x$ the smaller the error of approximation. This program makes this process easy and visual for the user. Even though the task may seem easy int first hand there are many difficult steps needed to be solved which mimic the problems the compilers solve trying to define a programming language.
 
